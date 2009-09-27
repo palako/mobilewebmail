@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gallery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://mobile.yahoo.com/widgets/schema/1.0/gallery/">
+	<description lang="en"> Wassup! widget</description>
+	<tags>  <!-- Use tags which identify your widget to other users -->
+		<tag>Yahoo!</tag>
+		<tag>Mobile</tag>
+		<tag>widget</tag>
+		<tag>flickr</tag>
+		<tag>upcoming</tag>
+		<tag>fireeagle</tag>
+		<tag>geoplanet</tag>
+	</tags>
+	<languages>  <!-- Use languages your widget supports -->
+		<lang>en-US</lang>
+		<lang>en-UK</lang>
+	</languages>
+</gallery>

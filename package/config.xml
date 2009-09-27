@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://mobile.yahoo.com/widgets/schema/1.0/config/">
+	<title>Mobile Webmail</title>
+	<version>0.1</version>
+	<identifier>mobilewebmail-3</identifier>
+	<description>Mobile web interface for IMAP based mail services</description>
+	<icon>ybang</icon>
+	<author organization="Yahoo!" href="http://www.yahoo.com"
+		email="palako@yahoo-inc.com">
+		Palako &amp; Arcturus
+	</author>
+	<widget base="http://www.noletia.com/mobilewebmail">
+		<preview>
+			<icon>ybang</icon>
+			<label>Mobile Webmail</label>
+		</preview>
+		<shortcuts>
+			<item default="true">
+				<label>Mobile Webmail</label>
+				<href>index.php</href>
+			</item>
+		</shortcuts>
+	</widget>
+</config>
