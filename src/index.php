@@ -72,7 +72,7 @@
                 </manage>
             </instance>
 
-            <submission method="urlencoded-post" resource="performAction.php" />
+            <submission method="urlencoded-post" resource="performaction.php" />
         </model>
     </models>
     

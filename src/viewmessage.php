@@ -179,31 +179,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 					<layout-items>
 						<block><strong>Delete</strong></block>
 					</layout-items>
-					<load-page event="activate" page="delete.bp?f=Inbox&amp;m=AGqliGIAAQYfSry5dgMyJQBBk9c&amp;ycb=LW3R9LOhZp8&amp;srcp=message&amp;i=0" accesskey="4" />
-				</placard>
-				<placard layout="simple">
-					<layout-items>
-						<block><strong>Flag</strong></block>
-					</layout-items>
-					<load-page event="activate" page="flag.bp?f=Inbox&amp;m=AGqliGIAAQYfSry5dgMyJQBBk9c&amp;s=1&amp;ycb=LW3R9LOhZp8&amp;srcp=message" />
-				</placard>
-				<placard layout="simple">
-					<layout-items>
-						<block><strong>Move</strong></block>
-					</layout-items>
-					<load-page event="activate" page="select.bp?f=Inbox&amp;m=AGqliGIAAQYfSry5dgMyJQBBk9c&amp;srcp=message&amp;e=0&amp;i=0" accesskey="5" />
+					<load-page event="activate" page="performaction.php?action=delete&amp;msgids=<?php echo($_GET['message_uid']); ?>" accesskey="4" />
 				</placard>
 				<placard layout="simple">
 					<layout-items>
 						<block><strong>Mark unread</strong></block>
 					</layout-items>
-					<load-page event="activate" page="read.bp?f=Inbox&amp;m=AGqliGIAAQYfSry5dgMyJQBBk9c&amp;s=0&amp;ycb=LW3R9LOhZp8&amp;srcp=message&amp;i=0" />
-				</placard>
-				<placard layout="simple">
-					<layout-items>
-						<block><strong>Mark as spam</strong></block>
-					</layout-items>
-					<load-page event="activate" page="spam.bp?f=Inbox&amp;m=AGqliGIAAQYfSry5dgMyJQBBk9c&amp;s=1&amp;ycb=LW3R9LOhZp8&amp;srcp=message" accesskey="6" />
+					<load-page event="activate" page="performaction.php?action=unread&amp;msgids=<?php echo($_GET['message_uid']); ?>" accesskey="6" />
 				</placard>
 			</placard-set>
 		</module>		

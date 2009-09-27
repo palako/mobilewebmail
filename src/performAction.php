@@ -28,7 +28,12 @@
 		$current_page = 0;
 	}
 	
-	$messagesIds = str_ireplace(' ', ',', $_POST['msgids']);
+	$messagesIds = $_POST['msgids'];
+	if(!isset($messagesIds)) {
+		$messagesIds = $_GET['msgids'];
+	}
+	
+	$messagesIds = str_ireplace(' ', ',', $messagesIds);
 	
 	$requiredMessageActions = array('read', 'unread', 'delete');
 	if(in_array($action, $requiredMessageActions) && 
