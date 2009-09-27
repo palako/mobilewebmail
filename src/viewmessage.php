@@ -145,7 +145,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 						<block><strong><?php echo htmlentities(decodeMimeStr($message->getSubject())); ?></strong></block>
 					</layout-items>
 				</placard>	
-					<block><br/><?php echo $message->getBody(); ?><br/></block>
+					<block><br/><?php echo htmlentities($message->getBody()); ?><br/></block>
 			<navigation-bar>
 				<back>
 					<label>Inbox</label>
