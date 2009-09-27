@@ -1,22 +1,26 @@
 <?php
+require('./includes/settings.php');
+require('./includes/imapConnection.php');
+
 if(isset($_POST['email']) && isset($_POST['password'])){
 	$email = $_POST['email'];
 	$password = $_POST['password'];
-	$mbox = imap_open("{localhost:143}INBOX", $email, $password);
+	$mbox = imap_open(getServiceString(), $email, $password);
 	if ($mbox !== false) {
 		session_start();
 		$_SESSION['email'] = $email;
-		$_SESSION['password'] = $password; 	
+		$_SESSION['password'] = $password; 
 		if(isset($_POST['url'])) {
 			header("Location: " . $_POST['url']);
 		} else {
-			header("Location: /index.php");
+			header("Location: ".URL_PREFIX."index.php");
 		}
+	}
 }
 if(isset($_GET['url'])) {
 	$url = $_GET['url'];
 } else {
-	$url = '/index.php';
+	$url = URL_PREFIX.'index.php';
 }
 
 header( "Content-Type: application/x-blueprint+xml" );

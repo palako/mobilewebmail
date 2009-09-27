@@ -99,10 +99,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 					<load-page use-cache="false" event="activate" page="composemessage.php?action=replyall" />
 				</inline-trigger>
 				<inline-trigger>
-					<label>Delete</label>
-				<load-page use-cache="false" event="activate" page="delete.bp?f=Inbox&amp;m=AGqliGIAAQYfSry5dgMyJQBBk9c&amp;ycb=LW3R9LOhZp8&amp;srcp=message&amp;i=0" />
-				</inline-trigger>
-				<inline-trigger>
 					<label>More...</label>
 					<setfocus control="actions" event="activate"/>
 				</inline-trigger>
