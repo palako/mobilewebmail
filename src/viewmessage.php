@@ -1,18 +1,11 @@
 <?php
 require('./includes/settings.php');
 require('./includes/session.php');
-try {
-		$service_string = "{" . IMAP_HOST . ":" 
-				. IMAP_PORT . "" . IMAP_SERVICE . "}" . IMAP_FOLDER;
-		
-		$mbox = @imap_open($service_string,
-				 $_SESSION['email'], 
-				 $_SESSION['password'])
-				 or 
-				 die(imap_last_error()."<br/>Connection Faliure!");
-} catch (Exception $e) {
-	error_log($e);
-}
+require('./includes/util.php');
+require('./includes/imapConnection.php');
+
+$mbox = getMbox();
+
 $msg_number = imap_msgno($mbox, $_GET['message_uid']);
 if(!is_int($msg_number)) {
 	die('Error: Message identifier is not a number');
@@ -67,11 +60,11 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		<tabs>
 			<tab id='read'>
 				<label>Messages</label>
-				<load-page event="activate" page="home.bp?srcp=message"/>
+				<load-page event="activate" page="index.php?page=<?php echo $page; ?>"/>
 			</tab>
 			<tab id='write'>
 				<label>Compose</label>
-				<load-page event="activate" page="compose.bp?srcp=message"/>
+				<load-page event="activate" page="composemail.php"/>
 			</tab>
 		</tabs>
 	   <navigation-bar>
@@ -82,7 +75,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			 <label/>		 
 		</next>
 		 <back>
-			 <label>Inbox</label>
+			 <label><?php echo ucfirst(getCurrentFolder()); ?></label>
 			 <load-page event="activate" page="index.php?page=<?php echo($page); ?>" />
 		 </back>
 	 </navigation-bar>
@@ -112,7 +105,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 							<block lines="unlimited" class="subdued">
 								<strong>From: </strong>
 								<inline-trigger>
-									<label><?php echo htmlentities($header->fromaddress); ?></label>
+									<label><?php echo htmlentities(decodeMimeStr($header->fromaddress)); ?></label>
 									<load event="activate" resource="widget:ygo-addressbook/contact/lookup?email=mailbot@yahoo.com" />
 								</inline-trigger>
 								<br/>
@@ -134,7 +127,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			 </module>	
 				<placard class="callout subdued" layout="simple">
 					<layout-items>
-						<block><strong><?php echo htmlentities($header->subject); ?></strong></block>
+						<block><strong><?php echo htmlentities(decodeMimeStr($header->subject)); ?></strong></block>
 					</layout-items>
 				</placard>	
 					<block><br/><?php echo $body; ?><br/></block>

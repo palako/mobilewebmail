@@ -1,50 +1,47 @@
 <?php
-require('./includes/settings.php');
-require('./includes/session.php');
-  
-header( "Content-Type: application/x-blueprint+xml" );
-header( "Cache-Control: no-cache" );
-echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+
+	require('./includes/settings.php');
+	require('./includes/session.php');
+	require('./includes/imapConnection.php');
+	require('./includes/util.php');
+	  
+	header( "Content-Type: application/x-blueprint+xml" );
+	header( "Cache-Control: no-cache" );
+	echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+
+	error_log(getServiceString());
+
+	$mbox = getMbox();
 	
-	$current_page = intval($_GET['page']);
+	$imap_folder = getCurrentFolder();
 	
-	try {
-		$service_string = "{" . IMAP_HOST . ":" 
-				. IMAP_PORT . "" . IMAP_SERVICE . "}" . IMAP_FOLDER;
-		
-		$mbox = @imap_open($service_string,
-				 $_SESSION['email'], 
-				 $_SESSION['password']) 
-				 or 
-				 die(imap_last_error()."<br>Connection Faliure!");
-	} catch (Exception $e) {
-		error_log($e);
+	$current_page = intval($_GET['page']) >= 0 ? intval($_GET['page']) : 0;
+	if($current_page == 0 && isset($_POST['page'])) {
+		$current_page = intval($_POST['page']) >= 0 ? 
+				intval($_POST['page']) : 0;	
 	}
 	
-	$mbox_info = imap_status($mbox, $service_string, SA_ALL);
+	$mbox_info = imap_status($mbox, getServiceString(), SA_ALL);
+	
 	
 	$num_messages = $mbox_info->messages;
 	$num_pages = round($num_messages / 10);
 	$recent_messages = $mbox_info->recent;
 	$unread_messages = $mbox_info->unseen;
 	
-	if($current_page > $num_pages) {
+	if($current_page >= $num_pages) {
 		$current_page = 0;
 	}
-	
-	function decodeMimeStr($string, $charset="UTF-8" )
-	{
-		$newString = '';
-	    $elements=imap_mime_header_decode($string);
-	    for($i=0;$i<count($elements);$i++)
-	    {
-	    	if ($elements[$i]->charset == 'default' || 
-	        	$elements[$i]->charset == 'x-unknown')
-	        	$elements[$i]->charset = 'iso-8859-1';
-	        $newString .= iconv($elements[$i]->charset, $charset, $elements[$i]->text);
-	    }
-	    return $newString;
-	} 	
+
+	if(isset($_GET['select_all'])) {
+		$select_all = $_GET['select_all']; //sanitize this
+	}
+	if(isset($_GET['error_message'])) {
+		$error_value = intval($_GET['error_message']);
+		if($error_value >=0 && $error_value < count($error_messages)) {
+			$error_message = $error_value;
+		}
+	}
 	
 ?>
 <page style="list">
@@ -70,7 +67,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
                 	<msgids><?php if(isset($select_all)) echo $select_all; ?></msgids>	
                     <action/>
                      <srcp>messagelist</srcp>
-                    <f>Inbox</f>
+                    <f><?php echo $imap_folder; ?></f>
                     <page><?php echo $current_page; ?></page>
                 </manage>
             </instance>
@@ -80,7 +77,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     </models>
     
     <page-header>
-		<page-title>Inbox (<?php echo $unread_messages; ?>)</page-title>
+		<page-title><?php echo "$imap_folder ($unread_messages)"; ?></page-title>
 		<tabs>
 			<tab id='read'>
 				<label>Messages</label>
@@ -89,7 +86,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			</tab>
 			<tab id='write'>
 				<label>Compose</label>
-				<load-page event="activate" page="composemail.php"/>
+				<load-page event="activate" page="compose.bp?srcp=messagelist"/>
 			</tab>
 		</tabs>
 		<navigation-bar>
@@ -114,9 +111,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 					<layout-items>
 						<block class="description">
 
-							<strong><?php echo $error_message['title'];?></strong>
+							<strong><?php echo $error_messages[$error_message]['title'];?></strong>
 						</block>
-												<block class="small"><?php echo $error_message['msg']; ?></block>
+												<block class="small"><?php echo $error_messages[$error_message]['msg']; ?></block>
 											</layout-items>
 				</placard>    
 	 <?php
@@ -136,7 +133,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
             
 			            <select ref="msgids" model="messages" appearance="placard">
 <?php 
-	for ($i = 0; $i<10; $i++) {
+	for ($i = 0; 
+			$i < 10 && ($current_page * 10 + $i) < $num_messages; 
+			$i++) {
 		
 		$current_message = $num_messages - ($current_page * 10 + $i);
 		$message_uid = imap_uid($mbox, $current_message);
@@ -150,7 +149,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			$fromBlock = "<strong>$from</strong>";
 		}
 		
-		$subject = decodeMimeStr(htmlentities($headers->subject));
+		$subject = decodeMimeStr($headers->subject);
 		
 		$date = strtotime($headers->date);
 		$now = time();
@@ -197,7 +196,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
                 </select>
             
             
-            
+          <?php
+          	 if($num_pages > 0) {
+           ?>  
           <page-navigator>
 				<page-info>
 					<current-page><?php echo $current_page + 1; ?></current-page>
@@ -208,16 +209,21 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 				<prev>
 					<label>Newer</label>
 					<?php if($current_page > 0) { ?>
-							<load-page event="activate" page="index.php?page=<?php echo $current_page - 1; ?>"/>
+											<load-page event="activate" page="index.php?page=<?php echo $current_page - 1; ?>" accesskey="9"/>
 					<?php } ?>				
-				</prev>
+									</prev>
 				<next>
 					<label>Older</label>
-					<?php if($current_page < $num_pages) { ?>
-											<load-page event="activate" page="index.php?page=<?php echo $current_page + 1; ?>"/>
+					<?php if($current_page < $num_pages - 1) { ?>
+											<load-page event="activate" page="index.php?page=<?php echo $current_page + 1; ?>" accesskey="9"/>
 					<?php } ?>			
-				</next>
-			</page-navigator>     
+									</next>
+
+			</page-navigator>
+			<?php
+          	 }
+			 ?>
+            
             <select1 ref="action" model="messages">
                 <item>
                     <label>Actions</label>
@@ -225,18 +231,20 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
                 </item>
                 <item>
                     <label>Mark as read</label>
+
                     <value>read</value>
                 </item>
                 <item>
                     <label>Mark as unread</label>
                     <value>unread</value>
                 </item>
-                <item>
+                                <item>
                     <label>Delete</label>
                     <value>delete</value>
                 </item>
 				<item>
                     <label>Select all</label>
+
                     <value>selectall</value>
                 </item>
                 <item>
@@ -244,9 +252,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
                     <value>selectnone</value>
                 </item>
             </select1>
+
+			
             <submit appearance="full" model="messages">
                 <label>Go</label>
-            </submit>            
-        </module>
+            </submit>
+            
+			        </module>
+
 </content>
 </page> 
