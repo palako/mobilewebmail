@@ -31,6 +31,7 @@ foreach($structure->parameters as $param) {
 $header = imap_headerinfo($mbox, $msg_number);
 $message->setFrom($header->fromaddress);
 $message->setTo($header->toaddress);
+$message->setCc($header->ccaddress);
 $message->setSubject($header->subject);
 $message->setBody(imap_fetchbody($mbox, $msg_number, '1'));// '1' is the text/plain version of the body in a multipart message
 $message->setDate($header->date);
@@ -173,7 +174,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 					<layout-items>
 						<block><strong>Reply all</strong></block>			
 					</layout-items>
-					<load-page event="activate" page="replyall.bp?f=Inbox&amp;m=AGqliGIAAQYfSry5dgMyJQBBk9c&amp;srcp=message&amp;i=0&amp;"  accesskey="2"/>
+					<load-page event="activate" page="composemessage.php?action=replyall"  accesskey="2"/>
 				</placard>
 				<placard layout="simple">
 					<layout-items>

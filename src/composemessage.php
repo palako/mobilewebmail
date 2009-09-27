@@ -51,9 +51,9 @@ if(isset($_SESSION['currentMessage'])) {
 
 switch($action) {
 	case 'reply':
+		$message->setCc('');
 		break;
 	case 'replyall':
-		$message->setCc('');
 		break;
 }
 

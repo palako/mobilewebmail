@@ -1,18 +1,12 @@
 <?php
-
 	require('./includes/settings.php');
 	require('./includes/session.php');
 	require('./includes/imapConnection.php');
 	require('./includes/util.php');
-	  
-	header( "Content-Type: application/x-blueprint+xml" );
-	header( "Cache-Control: no-cache" );
-	echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 
-	error_log(getServiceString());
-
-	$mbox = getMbox();
+	unset($_SESSION['currentMessage']);
 	
+	$mbox = getMbox();	
 	$imap_folder = getCurrentFolder();
 	
 	$current_page = intval($_GET['page']) >= 0 ? intval($_GET['page']) : 0;
@@ -43,6 +37,9 @@
 		}
 	}
 	
+header( "Content-Type: application/x-blueprint+xml" );
+header( "Cache-Control: no-cache" );
+echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";	
 ?>
 <page style="list">
 	
@@ -86,7 +83,7 @@
 			</tab>
 			<tab id='write'>
 				<label>Compose</label>
-				<load-page event="activate" page="compose.bp?srcp=messagelist"/>
+				<load-page event="activate" page="composemessage.php"/>
 			</tab>
 		</tabs>
 		<navigation-bar>
