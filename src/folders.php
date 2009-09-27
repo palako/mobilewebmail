@@ -83,7 +83,6 @@
 			 </search-box>
 		</module>
 		
-				
 		<module class="featured">
 		<placard class="callout" layout="card">
 					<layout-items>
@@ -93,7 +92,7 @@
 						</block>
 												<block class="small"><?php echo "($num_messages messages / $unread_messages unread )"; ?></block>					
 					</layout-items>
-					<load-page event="activate" page="setFolder.php?mbox=<?echo $currentMbox; ?>"/>
+					<load-page event="activate" page="setfolder.php?mbox=<?echo $currentMbox; ?>"/>
 				</placard>
         </module>
         <module>

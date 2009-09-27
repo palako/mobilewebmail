@@ -69,7 +69,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
                 </manage>
             </instance>
 
-            <submission method="urlencoded-post" resource="performAction.php" />
+            <submission method="urlencoded-post" resource="performaction.php" />
         </model>
     </models>
     
