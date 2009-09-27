@@ -92,7 +92,11 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<link-set>
 				<inline-trigger>
 					<label>Reply</label>
-					<load-page use-cache="false" event="activate" page="reply.bp?f=Inbox&amp;m=AGqliGIAAQYfSry5dgMyJQBBk9c&amp;srcp=message&amp;i=0&amp;" />
+					<load-page use-cache="false" event="activate" page="composemessage.php?action=reply" />
+				</inline-trigger>
+				<inline-trigger>
+					<label>Reply all</label>
+					<load-page use-cache="false" event="activate" page="composemessage.php?action=replyall" />
 				</inline-trigger>
 				<inline-trigger>
 					<label>Delete</label>
