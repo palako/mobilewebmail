@@ -51,9 +51,15 @@ if(isset($_SESSION['currentMessage'])) {
 
 switch($action) {
 	case 'reply':
+		$message->setTo($message->getFrom());
 		$message->setCc('');
 		break;
 	case 'replyall':
+		$message->setTo($message->getFrom());
+		break;
+	case 'forward':
+		$message->setTo('');
+		$message->setCc('');
 		break;
 }
 
@@ -74,10 +80,10 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			<instance>
 				<data xmlns="">
 					<from><?php echo $_SESSION['email']; ?></from>
-					<to><?php echo $message->getFrom(); ?></to>
+					<to><?php echo $message->getTo(); ?></to>
 					<cc><?php echo $message->getCc(); ?></cc>
 					<subject><?php echo $message->getSubject(); ?></subject>
-					<body><?php echo $message->getBody(); ?></body>
+					<body><?php echo htmlentities($message->getBody()); ?></body>
 				</data>
 			</instance>
 			<submission id="compose" resource="composemessage.php"

@@ -116,12 +116,20 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 									<load event="activate" resource="widget:ygo-addressbook/contact/lookup?email=mailbot@yahoo.com" />
 								</inline-trigger>
 								<br/>
-									<strong>To: </strong>
+								<strong>To: </strong>
 								<inline-trigger>
 										<label><?php echo htmlentities($message->getTo()); ?></label>
 										<load event="activate" resource="widget:ygo-addressbook/contact/lookup?email=palako@ymail.com" />
 								</inline-trigger>
 								<br/>
+								<?php if($message->getCc() != '') { ?>	
+								<strong>Cc: </strong>
+								<inline-trigger>
+										<label><?php echo htmlentities($message->getCc()); ?></label>
+										<load event="activate" resource="widget:ygo-addressbook/contact/lookup?email=palako@ymail.com" />
+								</inline-trigger>
+								<br/>
+								<?php } ?>
 							</block>
 						</template-item>
 						<template-item field="description">
@@ -180,7 +188,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 					<layout-items>
 						<block><strong>Forward</strong></block>		
 					</layout-items>
-					<load-page event="activate" page="forward.bp?f=Inbox&amp;m=AGqliGIAAQYfSry5dgMyJQBBk9c&amp;srcp=message&amp;i=0&amp;" accesskey="3" />
+					<load-page event="activate" page="composemessage.php?action=forward" accesskey="3" />
 				</placard>
 				<placard layout="simple">
 					<layout-items>
