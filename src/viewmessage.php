@@ -3,17 +3,20 @@ require('./includes/settings.php');
 require('./includes/session.php');
 require('./includes/util.php');
 require('./includes/imapConnection.php');
+require('./classes/Message.php');
 
 $mbox = getMbox();
+
+$message = new Message();
 
 $msg_number = imap_msgno($mbox, $_GET['message_uid']);
 if(!is_int($msg_number)) {
 	die('Error: Message identifier is not a number');
 }
 if(isset($_GET['page']) && is_numeric($_GET['page'])) {
-	$page = $_GET['page'];
+	$pageNumber = $_GET['page'];
 } else {
-	$page = 0;
+	$pageNumber = 0;
 }
 $total_messages = imap_num_msg($mbox);  
 
@@ -26,9 +29,12 @@ foreach($structure->parameters as $param) {
 	}
 }
 $header = imap_headerinfo($mbox, $msg_number);
-$body = strtr(strip_tags(iconv($charset, 'UTF-8', imap_fetchbody($mbox, $msg_number, '1'))), array("\r\n" => "<br/>", "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;", "'" => "&#039;"));
-
-
+$message->setFrom($header->fromaddress);
+$message->setTo($header->toaddress);
+$message->setSubject($header->subject);
+$message->setBody(imap_fetchbody($mbox, $msg_number, '1'));// '1' is the text/plain version of the body in a multipart message
+$message->setDate($header->date);
+$_SESSION['currentMessage'] = serialize($message);
 if($msg_number > 1) {
 	$prev_message=imap_uid($mbox, $msg_number-1);
 } else {
@@ -60,11 +66,11 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		<tabs>
 			<tab id='read'>
 				<label>Messages</label>
-				<load-page event="activate" page="index.php?page=<?php echo $page; ?>"/>
+				<load-page event="activate" page="index.php?page=<?php echo $pageNumber; ?>"/>
 			</tab>
 			<tab id='write'>
 				<label>Compose</label>
-				<load-page event="activate" page="composemail.php"/>
+				<load-page event="activate" page="composemessage.php"/>
 			</tab>
 		</tabs>
 	   <navigation-bar>
@@ -76,7 +82,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		</next>
 		 <back>
 			 <label><?php echo ucfirst(getCurrentFolder()); ?></label>
-			 <load-page event="activate" page="index.php?page=<?php echo($page); ?>" />
+			 <load-page event="activate" page="index.php?page=<?php echo($pageNumber); ?>" />
 		 </back>
 	 </navigation-bar>
 	</page-header>
@@ -105,13 +111,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 							<block lines="unlimited" class="subdued">
 								<strong>From: </strong>
 								<inline-trigger>
-									<label><?php echo htmlentities(decodeMimeStr($header->fromaddress)); ?></label>
+									<label><?php echo htmlentities($message->getFrom()); ?></label>
 									<load event="activate" resource="widget:ygo-addressbook/contact/lookup?email=mailbot@yahoo.com" />
 								</inline-trigger>
 								<br/>
 									<strong>To: </strong>
 								<inline-trigger>
-										<label><?php echo htmlentities($header->toaddress); ?></label>
+										<label><?php echo htmlentities($message->getTo()); ?></label>
 										<load event="activate" resource="widget:ygo-addressbook/contact/lookup?email=palako@ymail.com" />
 								</inline-trigger>
 								<br/>
@@ -119,7 +125,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 						</template-item>
 						<template-item field="description">
 							<block>
-								<span class="small subdued"><?php echo htmlentities($header->date); ?></span>
+								<span class="small subdued"><?php echo htmlentities($message->getDate()); ?></span>
 							</block>
 						</template-item>
 					</template-items>
@@ -127,25 +133,25 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			 </module>	
 				<placard class="callout subdued" layout="simple">
 					<layout-items>
-						<block><strong><?php echo htmlentities(decodeMimeStr($header->subject)); ?></strong></block>
+						<block><strong><?php echo htmlentities(decodeMimeStr($message->getSubject())); ?></strong></block>
 					</layout-items>
 				</placard>	
-					<block><br/><?php echo $body; ?><br/></block>
+					<block><br/><?php echo $message->getBody(); ?><br/></block>
 			<navigation-bar>
 				<back>
 					<label>Inbox</label>
-					<load-page event="activate" page="index.php?page=<?php echo($page); ?>" />
+					<load-page event="activate" page="index.php?page=<?php echo($pageNumber); ?>" />
 				</back>
 				<prev>
 					<label>Older</label>
 					<?php if(isset($prev_message)) { ?>
-							<load-page event="activate" page="viewmessage.php?message_uid=<?php echo($prev_message . '&amp;page=' . $page); ?>"/>
+							<load-page event="activate" page="viewmessage.php?message_uid=<?php echo($prev_message . '&amp;page=' . $pageNumber); ?>"/>
 					<?php } ?>	
 				</prev>
 				<next>
 					<label>Newer</label>
 					<?php if(isset($next_message)) { ?>
-							<load-page event="activate" page="viewmessage.php?message_uid=<?php echo($next_message . '&amp;page=' . $page); ?>"/>
+							<load-page event="activate" page="viewmessage.php?message_uid=<?php echo($next_message . '&amp;page=' . $pageNumber); ?>"/>
 					<?php } ?>
 				</next>			
 		   </navigation-bar>	
@@ -161,7 +167,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 					<layout-items>
 						<block><strong>Reply</strong></block>
 					</layout-items>
-					<load-page event="activate" page="reply.bp?f=Inbox&amp;m=AGqliGIAAQYfSry5dgMyJQBBk9c&amp;srcp=message&amp;i=0&amp;"  accesskey="1"/>
+					<load-page event="activate" page="composemessage.php?action=reply"  accesskey="1"/>
 				</placard>
 				<placard layout="simple">
 					<layout-items>
