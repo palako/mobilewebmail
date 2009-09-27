@@ -3,6 +3,7 @@
 	require('./includes/session.php');
 	require('./includes/imapConnection.php');
 	require('./includes/util.php');
+	require('./classes/Message.php');
 
 	unset($_SESSION['currentMessage']);
 	
@@ -134,19 +135,20 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			$i < 10 && ($current_page * 10 + $i) < $num_messages; 
 			$i++) {
 		
+		$message = new Message();
 		$current_message = $num_messages - ($current_page * 10 + $i);
 		$message_uid = imap_uid($mbox, $current_message);
 		
 		$headers = imap_headerinfo($mbox, $current_message);
 		$from = $headers->from[0]->personal ? 
 					$headers->from[0]->personal : $headers->from[0]->mailbox;
-		$from = decodeMimeStr($from);
-		$fromBlock = "<span class=\"subdued\">$from </span>";
+		$message->setFrom($from);
+		$fromBlock = "<span class=\"subdued\">" . htmlentities($message->getFrom()) . "</span>";
 		if($headers->Unseen == 'U') { //Not read
-			$fromBlock = "<strong>$from</strong>";
+			$fromBlock = "<strong>" . htmlentities($message->getFrom()) . "</strong>";
 		}
 		
-		$subject = decodeMimeStr($headers->subject);
+		$message->setSubject($headers->subject);
 		
 		$date = strtotime($headers->date);
 		$now = time();
@@ -162,37 +164,26 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			$display_date = date('D g:i a', $date);
 		}
 ?>
-                             <item>
-                
-                
-                   <placard layout="template">
+				<item>
+				<placard layout="template">
 					<template-items format="title-value">
 						<template-item field="title">
-
-							<block>
-														 	<?php echo $fromBlock; ?> 
-														</block>
+							<block><?php echo $fromBlock; ?></block>
 						</template-item>
 						<template-item field="value">
 							<block><?php echo $display_date; ?></block>
 						</template-item>
-
 						<template-item field="subtext" lines="1">
-							<block><span class="small"><?php echo $subject; ?></span></block>
+							<block><span class="small"><?php echo htmlentities($message->getSubject()); ?></span></block>
 						</template-item>
 					</template-items>
-										<load event="activate"
-					resource="<?php echo('viewmessage.php?message_uid=' . $message_uid . '&amp;page=' . $current_page); ?>" />
-					
-									  </placard>
+						<load event="activate"
+							resource="<?php echo('viewmessage.php?message_uid=' . $message_uid . '&amp;page=' . $current_page); ?>" />
+				</placard>
                   <value><?php echo $message_uid; ?></value>
                 </item>
-<?php 
-	}
-?>
-                </select>
-            
-            
+	<?php } ?>
+			</select>
           <?php
           	 if($num_pages > 0) {
            ?>  
@@ -249,13 +240,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
                     <value>selectnone</value>
                 </item>
             </select1>
-
-			
             <submit appearance="full" model="messages">
                 <label>Go</label>
             </submit>
-            
-			        </module>
-
-</content>
+		</module>
+	</content>
 </page> 

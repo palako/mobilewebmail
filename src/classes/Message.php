@@ -50,8 +50,7 @@ class Message {
 	}
 	
 	public function getBody() {
-		//return strtr(strip_tags(iconv($charset, 'UTF-8', $this->body)), array("\r\n" => "<br/>", "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;", "'" => "&#039;"));
-		return decodeMimeStr($this->body);
+		return decodeMimeStr(strtr(strip_tags(iconv($charset, 'UTF-8', $this->body)), array("\r\n" => "<br/>", "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;", "'" => "&#039;")));
 	}
 	
 	public function setBody($body) {
