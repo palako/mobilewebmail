@@ -9,7 +9,7 @@ $errMsg=null;
 //postback send message action
 if(isset($_POST) && count($_POST)>0) {
 	if(isset($_POST['cancel'])) {
-		header("Location: /index.php");
+		header("Location: ".URL_PREFIX."index.php");
 		die();
 	}
 	if ($_POST['from'] != '' && $_POST['to'] != '' && $_POST['subject'] != '') {
