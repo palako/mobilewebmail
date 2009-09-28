@@ -51,7 +51,7 @@ class Message {
 	}
 	
 	public function getBody($raw=false) {
-		return $raw?$this->body:strtr(strip_tags(iconv($charset, 'UTF-8', decodeMimeStr($this->body))), array("\r\n" => "<br/>", "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;", "'" => "&#039;"));
+		return $raw?$this->body:strtr(strip_tags(iconv($charset, 'UTF-8', decodeMimeStr($this->body))), array("<br/>" => "\r\n", "<br>" => "\r\n", "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;", "'" => "&#039;"));
 	}
 	
 	public function setBody($body) {
