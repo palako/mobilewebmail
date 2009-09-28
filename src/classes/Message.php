@@ -18,7 +18,7 @@ class Message {
 	}
 	
 	public function getFrom() {
-		return decodeMimeStr($this->from);
+		return strtr(decodeMimeStr($this->from), array("&" => "&amp;"));
 	}
 	
 	public function setFrom($from) {
@@ -50,7 +50,7 @@ class Message {
 	}
 	
 	public function getBody() {
-		return decodeMimeStr(strtr(strip_tags(iconv($charset, 'UTF-8', $this->body)), array("\r\n" => "<br/>", "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;", "'" => "&#039;")));
+		return strtr(strip_tags(iconv($charset, 'UTF-8', decodeMimeStr($this->body))), array("\r\n" => "<br/>", "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;", "'" => "&#039;"));
 	}
 	
 	public function setBody($body) {
