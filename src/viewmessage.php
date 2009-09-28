@@ -112,20 +112,20 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 							<block lines="unlimited" class="subdued">
 								<strong>From: </strong>
 								<inline-trigger>
-									<label><?php echo htmlentities($message->getFrom()); ?></label>
+									<label><?php echo htmlspecialchars($message->getFrom()); ?></label>
 									<load event="activate" resource="widget:ygo-addressbook/contact/lookup?email=mailbot@yahoo.com" />
 								</inline-trigger>
 								<br/>
 								<strong>To: </strong>
 								<inline-trigger>
-										<label><?php echo htmlentities($message->getTo()); ?></label>
+										<label><?php echo htmlspecialchars($message->getTo()); ?></label>
 										<load event="activate" resource="widget:ygo-addressbook/contact/lookup?email=palako@ymail.com" />
 								</inline-trigger>
 								<br/>
 								<?php if($message->getCc() != '') { ?>	
 								<strong>Cc: </strong>
 								<inline-trigger>
-										<label><?php echo htmlentities($message->getCc()); ?></label>
+										<label><?php echo htmlspecialchars($message->getCc()); ?></label>
 										<load event="activate" resource="widget:ygo-addressbook/contact/lookup?email=palako@ymail.com" />
 								</inline-trigger>
 								<br/>
@@ -134,7 +134,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 						</template-item>
 						<template-item field="description">
 							<block>
-								<span class="small subdued"><?php echo htmlentities($message->getDate()); ?></span>
+								<span class="small subdued"><?php echo htmlspecialchars($message->getDate()); ?></span>
 							</block>
 						</template-item>
 					</template-items>
@@ -142,10 +142,10 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			 </module>	
 				<placard class="callout subdued" layout="simple">
 					<layout-items>
-						<block><strong><?php echo htmlentities(decodeMimeStr($message->getSubject())); ?></strong></block>
+						<block><strong><?php echo htmlspecialchars(decodeMimeStr($message->getSubject())); ?></strong></block>
 					</layout-items>
 				</placard>	
-					<block><br/><?php echo htmlentities($message->getBody()); ?><br/></block>
+					<block><br/><?php echo htmlspecialchars($message->getBody()); ?><br/></block>
 			<navigation-bar>
 				<back>
 					<label>Inbox</label>

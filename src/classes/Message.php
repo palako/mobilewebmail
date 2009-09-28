@@ -17,40 +17,41 @@ class Message {
 		$this->subject = $subject;
 	}
 	
-	public function getFrom() {
-		return strtr(decodeMimeStr($this->from), array("&" => "&amp;"));
+	public function getFrom($raw=false) {
+		
+		return $raw?$this->from:strtr(decodeMimeStr($this->from), array("&" => "&amp;"));
 	}
-	
+		
 	public function setFrom($from) {
 		$this->from = $from;
 	}
 	
-	public function getTo() {
-		return decodeMimeStr($this->to);
+	public function getTo($raw=false) {
+		return $raw?$this->to:strtr(decodeMimeStr($this->to), array("&" => "&amp;"));
 	}
 	
 	public function setTo($to) {
 		$this->to = $to;
 	}
 	
-	public function getCc() {
-		return decodeMimeStr($this->cc);
+	public function getCc($raw=false) {
+		return $raw?$this->cc:strtr(decodeMimeStr($this->cc), array("&" => "&amp;"));
 	}
 	
 	public function setCc($cc) {
 		$this->cc = $cc;
 	}
 	
-	public function getBcc() {
-		return decodeMimeStr($this->bcc);
+	public function getBcc($raw=false) {
+		return $raw?$this->bcc:strtr(decodeMimeStr($this->bcc), array("&" => "&amp;"));
 	}
 	
 	public function setBcc($bcc) {
 		$this->bcc = $bcc;
 	}
 	
-	public function getBody() {
-		return strtr(strip_tags(iconv($charset, 'UTF-8', decodeMimeStr($this->body))), array("\r\n" => "<br/>", "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;", "'" => "&#039;"));
+	public function getBody($raw=false) {
+		return $raw?$this->body:strtr(strip_tags(iconv($charset, 'UTF-8', decodeMimeStr($this->body))), array("\r\n" => "<br/>", "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;", "'" => "&#039;"));
 	}
 	
 	public function setBody($body) {
@@ -61,7 +62,7 @@ class Message {
 		$this->date = $date;
 	}
 	
-	public function getDate() {
-		return decodeMimeStr($this->date);
+	public function getDate($raw=false) {
+		return $raw?$this->date:decodeMimeStr($this->date);
 	}
 }

@@ -143,9 +143,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		$from = $headers->from[0]->personal ? 
 					$headers->from[0]->personal : $headers->from[0]->mailbox;
 		$message->setFrom($from);
-		$fromBlock = "<span class=\"subdued\">" . htmlentities($message->getFrom()) . "</span>";
+		$fromBlock = "<span class=\"subdued\">" . htmlspecialchars($message->getFrom()) . "</span>";
 		if($headers->Unseen == 'U') { //Not read
-			$fromBlock = "<strong>" . htmlentities($message->getFrom()) . "</strong>";
+			$fromBlock = "<strong>" . htmlspecialchars($message->getFrom()) . "</strong>";
 		}
 		
 		$message->setSubject($headers->subject);
@@ -174,7 +174,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 							<block><?php echo $display_date; ?></block>
 						</template-item>
 						<template-item field="subtext" lines="1">
-							<block><span class="small"><?php echo htmlentities($message->getSubject()); ?></span></block>
+							<block><span class="small"><?php echo htmlspecialchars($message->getSubject()); ?></span></block>
 						</template-item>
 					</template-items>
 						<load event="activate"
